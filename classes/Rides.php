@@ -9,10 +9,12 @@
 class Rides
 {
     private $db;
+    private $user;
 
     public function __construct()
     {
         $this->db = new DB();
+        $this->user = new User();
     }
 
     public function availableRides(){
@@ -37,7 +39,8 @@ class Rides
                 'origin' => $origin,
                 'destination' => $destination,
                 'deadline' => $deadline,
-                'capacity' => $capacity
+                'capacity' => $capacity,
+                'space_available' => $capacity
             ));
 
         if($created_by){
@@ -45,5 +48,48 @@ class Rides
         } else {
             $_SESSION['error'] = 'Failed to create ride!';
         }
+    }
+
+    public function getRide()
+    {
+        if ($this->user->isLoggedIn()) {
+            $ride_id = $_POST['ride_id'];
+            $booked_by = $_SESSION['user_id'];
+            $space_available = $this->checkForSpace($ride_id);
+
+            // check for available space
+            if($space_available) {
+                // create booking
+                $saved = $this->db->query('INSERT INTO bookings(ride_id, booked_by) 
+                    VALUES(:ride_id, :booked_by)', array(
+                        'ride_id' => $ride_id,
+                        'booked_by' => $booked_by
+                ));
+
+                if($saved){
+                    $space_available -= 1;
+
+                    // update the spaces available
+                    $updated = $this->db->query('UPDATE rides SET space_available = :spaces 
+                        WHERE id = :ride_id', array('spaces' => $space_available, 'ride_id' => $ride_id));
+
+                    if($updated) {
+                        $_SESSION['success'] = 'Booking has been made!';
+                    }
+                }
+            } else {
+                $_SESSION['error'] = 'Sorry! There are no spaces available for this ride';
+            }
+        }
+    }
+
+    public function checkForSpace($ride_id) {
+        $ride = $this->db->query('SELECT * FROM rides WHERE id = :ride_id', array('ride_id' => $ride_id), PDO::FETCH_OBJ);
+
+        return $ride[0]->space_available;
+    }
+
+    public function checkRideWasBooked($user_id, $ride_id) {
+
     }
 }

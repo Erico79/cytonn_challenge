@@ -17,4 +17,12 @@ $(function(){
     $('#logout').on('click', function () {
         $('#logout-form').submit();
     });
+
+    // get a ride
+    $('.book_ride').on('click', function () {
+        var ride_id = $(this).attr('ride_id');
+        $('#ride_id').val(ride_id);
+
+        $('#get_ride_form').submit();
+    });
 });

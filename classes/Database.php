@@ -1,12 +1,4 @@
 <?php
-/**
- *  DB - A simple database class 
- *
- * @author		Author: Vivek Wicky Aswal. (https://twitter.com/#!/VivekWickyAswal)
- * @git 		https://github.com/wickyaswal/PHP-MySQL-PDO-Database-Class
- * @version      0.2ab
- *
- */
 require("Log.php");
 class DB
 {

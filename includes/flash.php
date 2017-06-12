@@ -8,6 +8,6 @@
 <?php if(isset($_SESSION['error'])){ ?>
 <div class="alert alert-success">
     <button class="close" data-dismiss="alert">&times;</button>
-    <strong>Error!</strong> <?=$_SESSION['success']; ?>
+    <strong>Error!</strong> <?=$_SESSION['error']; ?>
 </div>
 <?php unset($_SESSION['error']); } ?>

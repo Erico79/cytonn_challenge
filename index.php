@@ -28,7 +28,7 @@
                 break;
 
             case 'get_a_ride':
-//                $rider->getRide($_POST[]);
+                $ride->getRide();
                 break;
         }
     }
@@ -84,7 +84,10 @@
                                     <td><?=$ride['destination']; ?></td>
                                     <td><?=$ride['space_available']; ?></td>
                                     <td><?=$mf->getDriver($ride['driver']); ?></td>
-                                    <td><button class="btn btn-xs" data-toggle="modal" data-target="#get_ride">Get a Ride</button></td>
+                                    <?php
+                                        $disabled = (!$user->isLoggedIn()) ? 'disabled' : '';
+                                    ?>
+                                    <td><button <?=$disabled; ?> class="btn btn-xs book_ride" data-toggle="modal" ride_id="<?=$ride['id']; ?>" data-target="#get_ride">Get a Ride</button></td>
                                 </tr>
                             <?php }} ?>
                             </tbody>
@@ -94,6 +97,11 @@
                 </div>
             </div>
         </div>
+
+        <form action="" method="post" id="get_ride_form">
+            <input type="hidden" name="ride_id" id="ride_id"/>
+            <input type="hidden" name="action" value="get_a_ride"/>
+        </form>
 
         <!--jquery lib-->
         <script src="assets/js/jquery-3.2.1.min.js"></script>
