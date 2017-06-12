@@ -1,8 +1,11 @@
 <?php
+    session_start();
     require('classes/Database.php');
+    require('classes/Masterfile.php');
     require('classes/Rides.php');
 
     $ride = new Rides();
+    $mf = new Masterfile();
 
     // create ride
     if(isset($_POST['action'])){
@@ -40,6 +43,8 @@
                     <div class="panel-heading"><i class="fa fa-car"></i> Available Rides</div>
                     <div class="panel-body">
 
+                        <?php include 'includes/flash.php'; ?>
+
                         <table id="available_rides" class="table table-striped">
                             <thead>
                                 <tr>
@@ -53,15 +58,15 @@
 
                             <tbody>
                             <?php
-                                $rides = $ride->all();
+                                $rides = $ride->availableRides();
                                 if(count($rides)){
                                     foreach ($rides as $ride){
                             ?>
                                 <tr>
-                                    <td>&nbsp;</td>
-                                    <td>&nbsp;</td>
-                                    <td>&nbsp;</td>
-                                    <td>&nbsp;</td>
+                                    <td><?=$ride['origin']; ?></td>
+                                    <td><?=$ride['destination']; ?></td>
+                                    <td><?=$ride['space_available']; ?></td>
+                                    <td><?=$mf->getDriver($ride['driver']); ?></td>
                                     <td><button class="btn btn-xs" data-toggle="modal" data-target="#get_ride">Get a Ride</button></td>
                                 </tr>
                             <?php }} ?>

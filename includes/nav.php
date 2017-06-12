@@ -62,13 +62,14 @@
                     <div class="form-group">
                         <label for="driver" class="col-md-4 control-label">Driver</label>
                         <div class="col-md-6">
-                            <select name="driver" id="driver" class="form-control">
+                            <select name="driver" id="driver" class="form-control" required>
                             <option value="">--Select Driver--</option>
                             <?php
+                                $drivers = $mf->get('driver');
                                 if(count($drivers)) {
                                     foreach ($drivers as $driver) {
                             ?>
-                            <option value="<?=$driver->id; ?>"><?=$driver->name; ?></option>
+                            <option value="<?=$driver['id']; ?>"><?=$driver['name']; ?></option>
                             <?php }} ?>
                         </select>
                         </div>
