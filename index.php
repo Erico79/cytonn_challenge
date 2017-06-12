@@ -3,6 +3,15 @@
     require('classes/Rides.php');
 
     $ride = new Rides();
+
+    // create ride
+    if(isset($_POST['action'])){
+        switch ($_POST['action']) {
+            case 'create_ride':
+                $ride->store();
+                break;
+        }
+    }
 ?>
 <html>
     <head>
@@ -26,9 +35,9 @@
         </div>
 
         <div class="row">
-            <div class="col-md-8 col-lg-offset-2">
+            <div class="col-md-10 col-lg-offset-1">
                 <div class="panel panel-info">
-                    <div class="panel-heading"><i class="fa fa-list"></i> Available Rides</div>
+                    <div class="panel-heading"><i class="fa fa-car"></i> Available Rides</div>
                     <div class="panel-body">
 
                         <table id="available_rides" class="table table-striped">
@@ -38,6 +47,7 @@
                                     <td>Destination</td>
                                     <td>Space Available</td>
                                     <td>Driver</td>
+                                    <td></td>
                                 </tr>
                             </thead>
 
@@ -52,6 +62,7 @@
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
+                                    <td><button class="btn btn-xs" data-toggle="modal" data-target="#get_ride">Get a Ride</button></td>
                                 </tr>
                             <?php }} ?>
                             </tbody>
