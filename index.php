@@ -3,15 +3,32 @@
     require('classes/Database.php');
     require('classes/Masterfile.php');
     require('classes/Rides.php');
+    require('classes/User.php');
 
     $ride = new Rides();
     $mf = new Masterfile();
+    $user = new User();
 
-    // create ride
     if(isset($_POST['action'])){
         switch ($_POST['action']) {
             case 'create_ride':
                 $ride->store();
+                break;
+
+            case 'register':
+                $user->store();
+                break;
+
+            case 'user_login':
+                $user->userLogin($_POST['email'], $_POST['password']);
+                break;
+
+            case 'logout':
+                $user->logout();
+                break;
+
+            case 'get_a_ride':
+//                $rider->getRide($_POST[]);
                 break;
         }
     }

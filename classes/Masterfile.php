@@ -36,9 +36,29 @@ class Masterfile
         $this->db->bind("role", "driver");
         $this->db->bind("id", $id);
 
-        $driver = $this->db->single("SELECT CONCAT(surname, firstname, middlename) as driver_name, id 
+        $driver = $this->db->single("SELECT CONCAT(surname,' ',firstname,' ',middlename) as driver_name, id 
           FROM masterfiles WHERE role = :role AND id = :id");
 
         return $driver;
+    }
+
+    public function store(){
+        $surname = $_POST['surname'];
+        $fname = $_POST['fname'];
+        $lname = $_POST['lname'];
+
+        $saved = $this->db->query('INSERT INTO masterfiles(surname, firstname, middlename, role) 
+          VALUES(:surname, :firstname, :middlename, :role)', array(
+            'surname' => $surname,
+            'firstname' => $fname,
+            'middlename' => $lname,
+            'role' => 'participant'
+        ));
+
+        if($saved){
+            return $this->db->lastInsertId();
+        } else {
+            return false;
+        }
     }
 }

@@ -5,3 +5,7 @@
 .reg-btn {
     color: #31708f !important;
 }
+
+.logout-btn {
+    color: red !important;
+}
