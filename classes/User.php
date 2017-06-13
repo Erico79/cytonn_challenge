@@ -77,4 +77,10 @@ class User
         session_destroy();
         header('Location: index.php');
     }
+
+    public function getAuthUser(){
+        $this->db->bind('id', $_SESSION['user_id']);
+        $user = $this->db->query('SELECT * FROM users WHERE id = :id');
+        return $user[0];
+    }
 }

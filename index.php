@@ -9,6 +9,9 @@
     $mf = new Masterfile();
     $user = new User();
 
+    // get the logged in user
+    $auth_user = $user->getAuthUser();
+
     if(isset($_POST['action'])){
         switch ($_POST['action']) {
             case 'create_ride':
@@ -77,17 +80,21 @@
                             <?php
                                 $rides = $ride->availableRides();
                                 if(count($rides)){
-                                    foreach ($rides as $ride){
+                                    foreach ($rides as $item){
                             ?>
                                 <tr>
-                                    <td><?=$ride['origin']; ?></td>
-                                    <td><?=$ride['destination']; ?></td>
-                                    <td><?=$ride['space_available']; ?></td>
-                                    <td><?=$mf->getDriver($ride['driver']); ?></td>
+                                    <td><?=$item['origin']; ?></td>
+                                    <td><?=$item['destination']; ?></td>
+                                    <td><?=$item['space_available']; ?></td>
+                                    <td><?=$mf->getDriver($item['driver']); ?></td>
                                     <?php
-                                        $disabled = (!$user->isLoggedIn()) ? 'disabled' : '';
+                                        $disabled = (!$user->isLoggedIn()) ? 'disabled title="Log in first!"' : '';
+                                        if(!$ride->checkIfRideWasBooked($auth_user['id'], $item['id'])){
                                     ?>
-                                    <td><button <?=$disabled; ?> class="btn btn-xs book_ride" data-toggle="modal" ride_id="<?=$ride['id']; ?>" data-target="#get_ride">Get a Ride</button></td>
+                                    <td><button <?=$disabled; ?> class="btn btn-xs book_ride" data-toggle="modal" ride_id="<?=$item['id']; ?>" data-target="#get_ride">Book Ride</button></td>
+                                    <?php } else { ?>
+                                    <td><span class="label label-success"><i class="fa fa-check"></i> Booked</span></td>
+                                    <?php } ?>
                                 </tr>
                             <?php }} ?>
                             </tbody>

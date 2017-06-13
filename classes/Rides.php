@@ -24,6 +24,12 @@ class Rides
         return $rides;
     }
 
+    public function find($id){
+        $this->db->bind('id', $id);
+        $ride = $this->db->query('SELECT * FROM rides WHERE id = :id');
+        return $ride[0];
+    }
+
     public function store(){
         $driver = $_POST['driver'];
         $origin = $_POST['origin'];
@@ -33,14 +39,14 @@ class Rides
         $capacity = $_POST['capacity'];
 
         $saved = $this->db->query('INSERT INTO rides
-            (driver, origin, destination, deadline, capacity) 
-            VALUES(:driver, :origin, :destination, :deadline, :capacity)', array(
+            (driver, origin, destination, deadline, capacity, space_available) 
+            VALUES(:driver, :origin, :destination, :deadline, :capacity, :space)', array(
                 'driver' => $driver,
                 'origin' => $origin,
                 'destination' => $destination,
                 'deadline' => $deadline,
                 'capacity' => $capacity,
-                'space_available' => $capacity
+                'space' => $capacity
             ));
 
         if($created_by){
@@ -56,6 +62,12 @@ class Rides
             $ride_id = $_POST['ride_id'];
             $booked_by = $_SESSION['user_id'];
             $space_available = $this->checkForSpace($ride_id);
+
+            // validate booking
+            if($this->checkIfRideWasBooked($booked_by, $ride_id)){
+                $_SESSION['warning'] = 'You have already booked this ride!';
+                return false;
+            }
 
             // check for available space
             if($space_available) {
@@ -74,6 +86,9 @@ class Rides
                         WHERE id = :ride_id', array('spaces' => $space_available, 'ride_id' => $ride_id));
 
                     if($updated) {
+                        // send confirmation
+                        $this->sendBookingConfirmation($ride_id);
+
                         $_SESSION['success'] = 'Booking has been made!';
                     }
                 }
@@ -83,13 +98,34 @@ class Rides
         }
     }
 
+    public function sendBookingConfirmation($ride_id){
+        $ride = $this->find($ride_id);
+
+        $user = $this->user->getAuthUser();
+        $message = "Dear customer, \n";
+        $message .= "You have booked for the following ride:\n";
+        $message .= "Origin: " . $ride['origin'] . "\n";
+        $message .= "Destination: " . $ride['destination'] . "\n";
+        $message .= "Booking Deadline: " . $ride['deadline'] . "\n";
+        $message .= "Thank you!";
+
+        // send confirmation email
+        return mail($user['email'], 'Booking Confirmation', $message);
+    }
+
     public function checkForSpace($ride_id) {
         $ride = $this->db->query('SELECT * FROM rides WHERE id = :ride_id', array('ride_id' => $ride_id), PDO::FETCH_OBJ);
 
         return $ride[0]->space_available;
     }
 
-    public function checkRideWasBooked($user_id, $ride_id) {
+    public function checkIfRideWasBooked($user_id, $ride_id) {
+        $this->db->bind('ride_id', $ride_id);
+        $this->db->bind('user_id', $user_id);
+        $booked = $this->db->query('SELECT * FROM bookings WHERE ride_id = :ride_id AND booked_by = :user_id');
 
+        if(count($booked))
+            return true;
+        return false;
     }
 }
